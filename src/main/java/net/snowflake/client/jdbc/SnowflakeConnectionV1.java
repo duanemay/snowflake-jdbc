@@ -71,6 +71,8 @@ public class SnowflakeConnectionV1 implements Connection
 
   private String accountName;
 
+  SnowflakePooledConnectionV1 pooledConnection;
+
   /**
    * this is just login database/schema/role specified in connection url/properties, i.e.
    * specified by the user, not necessarily actual db/schema/role
@@ -787,6 +789,9 @@ public class SnowflakeConnectionV1 implements Connection
       {
         sfSession.close();
         sfSession = null;
+      }
+      if (this.pooledConnection != null) {
+        this.pooledConnection.fireConnectionClosed();
       }
       isClosed = true;
     }

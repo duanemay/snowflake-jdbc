@@ -3,7 +3,9 @@ package net.snowflake.client.jdbc;
 import net.snowflake.client.log.SFLogger;
 import net.snowflake.client.log.SFLoggerFactory;
 
+import javax.sql.ConnectionPoolDataSource;
 import javax.sql.DataSource;
+import javax.sql.PooledConnection;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,7 +17,7 @@ import java.util.logging.Logger;
 /**
  * Created by hyu on 5/11/17.
  */
-public class SnowflakeBasicDataSource implements DataSource
+public class SnowflakeBasicDataSource implements DataSource, ConnectionPoolDataSource
 {
   private String url;
 
@@ -196,5 +198,15 @@ public class SnowflakeBasicDataSource implements DataSource
 
       return url.toString();
     }
+  }
+
+  @Override
+  public PooledConnection getPooledConnection() throws SQLException {
+    return new SnowflakePooledConnectionV1((SnowflakeConnectionV1)this.getConnection());
+  }
+
+  @Override
+  public PooledConnection getPooledConnection(String user, String password) throws SQLException {
+    return new SnowflakePooledConnectionV1((SnowflakeConnectionV1)this.getConnection(user, password));
   }
 }
